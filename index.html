@@ -135,7 +135,7 @@ info.onAdd = function (map) {
 info.update = function (props) {
 	this._div.innerHTML ='<h4> Nº de casos de COVID-19 por concelho</h4>' +  (props ?
         '<b>' + props.Concelho + '</b><br />' + props.Casos_23_1 + ' Casos por 10k hab / mi<sup>2</sup>'
-        :'Clique num marcador');
+        :'Clica num marcador');
 };
 info.addTo(map);
 
@@ -149,7 +149,7 @@ info.onAdd = function (map) {
 info.update = function (props) {
 	this._div.innerHTML ='<h4> Nº população por concelho</h4>' +  (props ?
         '<b>' + props.Concelho + '</b><br />' + props.Casos_23_1 + ' Casos por 10k hab / mi<sup>2</sup>'
-        :'Clique num concelho');
+        :'Clica num concelho');
 };
 info.addTo(map);
 
