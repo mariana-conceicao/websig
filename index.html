@@ -167,6 +167,15 @@ function resetHighlight(e) {
 
 
 //LEGENDA
+//CORES DA LEGENDA
+function getcor10k(d) {
+return d > 9 ?'#D35400':
+	d > 6 ?'#F39C12':
+	d > 3 ?'#27AE60':
+	d > 0 ?'#1E8449':
+				'#A9DFBF';
+}
+	  
 var legend = L.control({position: 'bottomright'});
 legend.onAdd = function (map) {
 
@@ -185,15 +194,7 @@ legend.onAdd = function (map) {
 
 legend.addTo(map);
 
-	//CORES DA LEGENDA
-	function getcor10k(d) {
-		return d > 9 ?'#D35400':
-						d > 6 ?'#F39C12':
-						d > 3 ?'#27AE60':
-						d > 0 ?'#1E8449':
-									'#A9DFBF';
-	}
-	  
+
 //CRIAÇÃO DOS MARCADORES E OS SEUS POP UPS;E OS CLUSTERS COM OS DADOS QUANDO SE AFASTA DO MAPA
 var marcadores = L.markerClusterGroup();
 	
