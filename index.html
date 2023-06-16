@@ -73,14 +73,6 @@
 	    layers: 'websig:ACONT_CONC_CAOP2022'
 	}).addTo(map);
 	
-//CORES DA LEGENDA
-	function getcor10k(d) {
-		return d > 9 ?'#D35400':
-						d > 6 ?'#F39C12':
-						d > 3 ?'#27AE60':
-						d > 0 ?'#1E8449':
-									'#A9DFBF';
-	}
 	
 //ESTILO DA LAYER CASOS POR 10K HAB
 	function estilo10k(feature) {
@@ -194,6 +186,15 @@ legend.onAdd = function (map) {
 
 legend.addTo(map);
 
+	//CORES DA LEGENDA
+	function getcor10k(d) {
+		return d > 9 ?'#D35400':
+						d > 6 ?'#F39C12':
+						d > 3 ?'#27AE60':
+						d > 0 ?'#1E8449':
+									'#A9DFBF';
+	}
+	  
 //CRIAÇÃO DOS MARCADORES E OS SEUS POP UPS;E OS CLUSTERS COM OS DADOS QUANDO SE AFASTA DO MAPA
 var marcadores = L.markerClusterGroup();
 	
