@@ -85,7 +85,13 @@
 			fillColor: getcor10k(feature.properties.Casos_23_1)
 		};
 	}
-	
+
+//VARIÁVEL DOS CASOS POR 10 MIL HABITANTES
+var casos10kLayer = L.geoJSON(casos10kData, {
+	style: estilo10k, 
+	onEachFeature: onEachFeature
+}).addTo(map);
+
 //ZOOM
 	function zoomToFeature(e) {
 		map.fitBounds(e.target.getBounds());
@@ -102,13 +108,6 @@
         	layer.bindPopup('Concelho: ' + feature.properties.Concelho +'<br>' + 'População: ' + feature.properties.POP_2018);
 	    };
 
-//VARIÁVEL DOS CASOS POR 10 MIL HABITANTES
-	var casos10kLayer = L.geoJSON(casos10kData, {
-		style: estilo10k, 
-		onEachFeature: onEachFeature
-	}).addTo(map);
-
-	
 //ESCALA
 		L.control.scale({
 			metric: true,
