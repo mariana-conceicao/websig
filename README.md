@@ -1,4 +1,3 @@
-
 # Trabalho prático de WebSIG 2023
 
 Este projeto foi elaborado com o objetivo de aprender a integrar os dados de saída dos sistemas de informação geográfica numa página web acessível a todos, de forma a poderem visualizar dados geográficos. 
@@ -49,7 +48,7 @@ Para a elaboração desta página web, foram utilizadas as linguagens de program
     - 0 - 3
     - 3 - 6
     - 6 - 9
-    - >9
+    - 9+
 - Por fim criei uma variável para associar aos **marcadores** e aos respetivos **clusters** a criar, associando um PopUp, quando se clica no marcador, indicando o número de casos de COVID-19 mas pontual, sem ser por 10 mil habitantes. Quando se dá zoom out no mapa, cria automaticamente clusters indicando esse valor. 
 
 
