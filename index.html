@@ -1,0 +1,237 @@
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Casos de COVID-19 nos concelhos de Portugal Continental</title>
+
+  <link rel="stylesheet" href="js/leaflet.css">
+  <link rel="stylesheet" href="dist/MarkerCluster.css">
+  <link rel="stylesheet" href="dist/MarkerCluster.Default.css">
+
+  
+  <script src="js/leaflet.js"></script>
+  <script src="dist/leaflet.markercluster-src.js"></script>
+
+  <style>
+    #map{ height: 100% }
+    .legend {
+    line-height: 30px;
+    color: #555;
+}
+//ESTILO DAS CAIXAS NO CANTO SUPERIOR DIREITO
+	.leaflet-container{
+	height: 400px;
+	width: 600px;
+	max-width: 100%;
+	max-height: 100%;
+}
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+.legend i {
+    width: 30px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+  <script src="data/casospor10khab.geojson"></script>
+  <script src="data/casos.geojson"></script>
+  
+  <script>
+
+//INICIAR O MAPA
+  var map = L.map('map').setView([38.749, -9.155], 13);
+
+//CARREGAR UM SERVIÇO DE MAPAS COMO MAPAS BASE
+  	var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	}).addTo(map);
+
+  	var grey = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+		maxZoom: 20,
+		attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+	});
+
+//ADICIONAR CAOP
+	L.tileLayer.wms('http://localhost:8080/geoserver/websig/wms?', {
+	    layers: 'websig:ACONT_CONC_CAOP2022'
+	}).addTo(map);
+	
+//CORES DA LEGENDA
+	function getcor10k(d) {
+		return d > 9 ?'#D35400':
+						d > 6 ?'#F39C12':
+						d > 3 ?'#27AE60':
+						d > 0 ?'#1E8449':
+									'#A9DFBF';
+	}
+	
+//ESTILO DA LAYER CASOS POR 10K HAB
+	function estilo10k(feature) {
+		return {
+			weight: 1,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 1.0,
+			fillColor: getcor10k(feature.properties.Casos_23_1)
+		};
+	}
+	
+//ZOOM
+	function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
+	
+	function emcadaConcelho(feature,layer) {
+		layer.on({
+			click: zoomToFeature
+		});
+	}
+	
+//POP UP QUANDO CLICA NUM CONCELHO
+	function onEachFeature(feature, layer) {
+        	layer.bindPopup('Concelho: ' + feature.properties.Concelho +'<br>' + 'População: ' + feature.properties.POP_2018);
+	    };
+
+//VARIÁVEL DOS CASOS POR 10 MIL HABITANTES
+	var casos10kLayer = L.geoJSON(casos10kData, {
+		style: estilo10k, 
+		onEachFeature: onEachFeature
+	}).addTo(map);
+
+	
+//ESCALA
+		L.control.scale({
+			metric: true,
+			imperial: false,
+			maxWidth: 100,
+			position: 'bottomleft'
+		}).addTo(map);
+
+//LAYER AND BASE MAPS CONTROL (CANTO SUPERIOR DIREITO)
+		var baseMaps = {
+			'Open Street Map' : osm,
+			'Grey map' : grey
+		};
+		var layers = {
+			'Casos por 10 mil habitantes' : casos10kLayer
+		};
+
+	//PRIMEIRA CAIXA
+var info = L.control();
+info.onAdd = function (map) {
+	this._div =L.DomUtil.create('div', 'info');
+	this.update();
+	return this._div
+};
+info.update = function (props) {
+	this._div.innerHTML ='<h4> Nº de casos de COVID-19 por concelho</h4>' +  (props ?
+        '<b>' + props.Concelho + '</b><br />' + props.Casos_23_1 + ' Casos por 10k hab / mi<sup>2</sup>'
+        :'Clica num marcador');
+};
+info.addTo(map);
+
+	//SEGUNDA CAIXA
+var info = L.control();
+info.onAdd = function (map) {
+	this._div =L.DomUtil.create('div', 'info');
+	this.update();
+	return this._div
+};
+info.update = function (props) {
+	this._div.innerHTML ='<h4> Nº população por concelho</h4>' +  (props ?
+        '<b>' + props.Concelho + '</b><br />' + props.Casos_23_1 + ' Casos por 10k hab / mi<sup>2</sup>'
+        :'Clica num concelho');
+};
+info.addTo(map);
+
+	//ICON PARA TROCAR OS MAPAS BASE CANTO SUPERIOR DIREITO
+L.control.layers(baseMaps, layers).addTo(map);
+
+
+function highlightFeature(e) {
+    info.update(layer.feature.properties);
+}
+
+function resetHighlight(e) {
+    info.update();
+}
+
+
+//LEGENDA
+var legend = L.control({position: 'bottomright'});
+legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = [0, 3, 6, 9],
+        labels = [];
+
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getcor10k(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+};
+
+legend.addTo(map);
+
+//CRIAÇÃO DOS MARCADORES E OS SEUS POP UPS;E OS CLUSTERS COM OS DADOS QUANDO SE AFASTA DO MAPA
+var marcadores = L.markerClusterGroup();
+	
+var casospontolayer = L.geoJSON(casosponto, {
+	onEachFeature: function (feature, layer) {
+		var valormes1 =parseInt (feature.properties.mes1);
+		console.log(valormes1);
+		layer.bindPopup(valormes1.toString());
+	
+}});
+marcadores.addLayer(casospontolayer);
+map.addLayer(marcadores);
+
+		
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </script>
+
+</body></html>
